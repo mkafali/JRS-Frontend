@@ -19,33 +19,33 @@ const ExtraView = () => {
   const [loadingCompanies, setLoadingCompanies] = useState(true);
   const [companiesError, setCompaniesError] = useState(null);
 
+  // Fetch users for the HR dropdown
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get('/admin/candidates'); // Adjust the endpoint as needed
+      setUsers(response.data);
+    } catch (err) {
+      console.error('Failed to fetch users:', err);
+      setUsersError('Failed to load users');
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  // Fetch companies for the company dropdown (optional)
+  const fetchCompanies = async () => {
+    try {
+      const response = await axios.get('/admin/companies'); 
+      setCompanies(response.data);
+    } catch (err) {
+      console.error('Failed to fetch companies:', err);
+      setCompaniesError('Failed to load companies');
+    } finally {
+      setLoadingCompanies(false);
+    }
+  };
+
   useEffect(() => {
-    // Fetch users for the HR dropdown
-    const fetchUsers = async () => {
-      try {
-        const response = await axios.get('/admin/candidates'); // Adjust the endpoint as needed
-        setUsers(response.data);
-      } catch (err) {
-        console.error('Failed to fetch users:', err);
-        setUsersError('Failed to load users');
-      } finally {
-        setLoadingUsers(false);
-      }
-    };
-
-    // Fetch companies for the company dropdown (optional)
-    const fetchCompanies = async () => {
-      try {
-        const response = await axios.get('/admin/companies'); 
-        setCompanies(response.data);
-      } catch (err) {
-        console.error('Failed to fetch companies:', err);
-        setCompaniesError('Failed to load companies');
-      } finally {
-        setLoadingCompanies(false);
-      }
-    };
-
     fetchUsers();
     fetchCompanies();
   }, []);
@@ -61,6 +61,8 @@ const ExtraView = () => {
       alert('HR created successfully!');
       setHrUserId('');
       setHrCompanyId('');
+      //Refetch
+      fetchUsers();
     } catch (err) {
       console.error(err);
       alert('Failed to create HR');
@@ -69,13 +71,29 @@ const ExtraView = () => {
 
   const handleCreateCompany = async (e) => {
     e.preventDefault();
+
+    // Trim the company name to remove leading/trailing spaces
+    const trimmedCompanyName = companyName.trim();
+
+    // Check if the company name already exists (case-insensitive)
+    const companyExists = companies.some(
+      (company) => company.name.toLowerCase() === trimmedCompanyName.toLowerCase()
+    );
+
+    if (companyExists) {
+      alert('Company already exists');
+      return; // Prevent form submission
+    }
+
     try {
       const reqBody = {
-        name: companyName,
+        name: trimmedCompanyName,
       };
       await axios.post('/admin/company', reqBody);
       alert('Company created successfully!');
       setCompanyName('');
+      // Refetch companies to include the new company
+      fetchCompanies();
     } catch (err) {
       console.error(err);
       alert('Failed to create company');
@@ -151,7 +169,9 @@ const ExtraView = () => {
             required
           />
 
-          <button type="submit" style={styles.button}>Create Company</button>
+          <button type="submit" style={styles.button} disabled={loadingCompanies}>
+            Create Company
+          </button>
         </form>
       </div>
     </div>
