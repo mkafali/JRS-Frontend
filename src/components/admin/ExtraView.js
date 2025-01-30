@@ -5,11 +5,51 @@ const ExtraView = () => {
   // CREATE HR form
   const [hrUserId, setHrUserId] = useState('');
   const [hrCompanyId, setHrCompanyId] = useState('');
-
+  
   // CREATE COMPANY form
   const [companyName, setCompanyName] = useState('');
 
-  
+  // State to store users for the dropdown
+  const [users, setUsers] = useState([]);
+  const [loadingUsers, setLoadingUsers] = useState(true);
+  const [usersError, setUsersError] = useState(null);
+
+  // State to store companies for the dropdown
+  const [companies, setCompanies] = useState([]);
+  const [loadingCompanies, setLoadingCompanies] = useState(true);
+  const [companiesError, setCompaniesError] = useState(null);
+
+  useEffect(() => {
+    // Fetch users for the HR dropdown
+    const fetchUsers = async () => {
+      try {
+        const response = await axios.get('/admin/candidates'); // Adjust the endpoint as needed
+        setUsers(response.data);
+      } catch (err) {
+        console.error('Failed to fetch users:', err);
+        setUsersError('Failed to load users');
+      } finally {
+        setLoadingUsers(false);
+      }
+    };
+
+    // Fetch companies for the company dropdown (optional)
+    const fetchCompanies = async () => {
+      try {
+        const response = await axios.get('/admin/companies'); 
+        setCompanies(response.data);
+      } catch (err) {
+        console.error('Failed to fetch companies:', err);
+        setCompaniesError('Failed to load companies');
+      } finally {
+        setLoadingCompanies(false);
+      }
+    };
+
+    fetchUsers();
+    fetchCompanies();
+  }, []);
+
   const handleCreateHr = async (e) => {
     e.preventDefault();
     try {
@@ -27,7 +67,6 @@ const ExtraView = () => {
     }
   };
 
-  
   const handleCreateCompany = async (e) => {
     e.preventDefault();
     try {
@@ -50,25 +89,53 @@ const ExtraView = () => {
       <div style={styles.formBlock}>
         <h3>Create HR</h3>
         <form onSubmit={handleCreateHr} style={styles.form}>
-          <label>User ID:</label>
-          <input
-            type="number"
-            value={hrUserId}
-            onChange={(e) => setHrUserId(e.target.value)}
-            style={styles.input}
-            required
-          />
+          {/* User Dropdown */}
+          <label>User:</label>
+          {loadingUsers ? (
+            <p>Loading users...</p>
+          ) : usersError ? (
+            <p style={{ color: 'red' }}>{usersError}</p>
+          ) : (
+            <select
+              value={hrUserId}
+              onChange={(e) => setHrUserId(e.target.value)}
+              style={styles.select}
+              required
+            >
+              <option value="">-- Select User --</option>
+              {users.map((user) => (
+                <option key={user.userId} value={user.userId}>
+                  {user.firstName} {user.lastName} (ID: {user.userId})
+                </option>
+              ))}
+            </select>
+          )}
 
-          <label>Company ID:</label>
-          <input
-            type="number"
-            value={hrCompanyId}
-            onChange={(e) => setHrCompanyId(e.target.value)}
-            style={styles.input}
-            required
-          />
+          {/* Company Dropdown */}
+          <label>Company:</label>
+          {loadingCompanies ? (
+            <p>Loading companies...</p>
+          ) : companiesError ? (
+            <p style={{ color: 'red' }}>{companiesError}</p>
+          ) : (
+            <select
+              value={hrCompanyId}
+              onChange={(e) => setHrCompanyId(e.target.value)}
+              style={styles.select}
+              required
+            >
+              <option value="">-- Select Company --</option>
+              {companies.map((company) => (
+                <option key={company.companyId} value={company.companyId}>
+                  {company.name} (ID: {company.companyId})
+                </option>
+              ))}
+            </select>
+          )}
 
-          <button type="submit" style={styles.button}>Create HR</button>
+          <button type="submit" style={styles.button} disabled={loadingUsers || loadingCompanies}>
+            Create HR
+          </button>
         </form>
       </div>
 
@@ -90,7 +157,6 @@ const ExtraView = () => {
     </div>
   );
 };
-
 const styles = {
   container: {
     textAlign: 'center',
