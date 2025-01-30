@@ -32,7 +32,7 @@ const ApplicationsView = () => {
     return applications.filter((app) => app.status === filterStatus);
   };
 
-  if (loading) return <div>Yükleniyor (applications)...</div>;
+  if (loading) return <div>Loading (applications)...</div>;
   if (error) return <div>{error}</div>;
 
   const filteredApps = getFilteredApplications();

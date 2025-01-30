@@ -24,7 +24,7 @@ const JobsView = () => {
     fetchJobs();
   }, []);
 
-  if (loading) return <div>Yükleniyor (jobs)...</div>;
+  if (loading) return <div>Loading (jobs)...</div>;
   if (error) return <div>{error}</div>;
 
   return (

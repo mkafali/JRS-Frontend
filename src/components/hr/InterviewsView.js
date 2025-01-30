@@ -45,7 +45,7 @@ const InterviewsView = () => {
     return interviews.filter((iv) => iv.status === filterStatus);
   };
 
-  if (loading) return <div>Yükleniyor (interviews)...</div>;
+  if (loading) return <div>Loading (interviews)...</div>;
   if (error) return <div>{error}</div>;
 
   const filteredInterviews = getFilteredInterviews();
