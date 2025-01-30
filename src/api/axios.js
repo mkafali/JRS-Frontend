@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: 'http://efficient-communication-production.up.railway.app:8080', // Adjust the baseURL as needed
+  baseURL: 'https://efficient-communication-production.up.railway.app', // Adjust the baseURL as needed
   withCredentials: true, // Enable sending cookies with each request
 });
 
