@@ -14,12 +14,15 @@ const ApplicationDetail = () => {
   const [interviewDate, setInterviewDate] = useState('');
   const [notes, setNotes] = useState('');
 
+  const [isScheduled, setIsScheduled] = useState(false);
+
   useEffect(() => {
     const fetchApplication = async () => {
       try {
         // GET /hr/applications/{applicationId}
         const response = await axios.get(`/hr/applications/${applicationId}`);
         setApplication(response.data);
+        setIsScheduled(response.data.hasInterview);
       } catch (err) {
         console.error(err);
         setError('Failed to fetch application (maybe it is PENDING?)');
@@ -48,6 +51,7 @@ const ApplicationDetail = () => {
 
       setInterviewDate('');
       setNotes('');
+      setIsScheduled(true);
     } catch (err) {
       console.error(err);
       alert('Failed to schedule interview');
@@ -89,7 +93,7 @@ const ApplicationDetail = () => {
         </div>
       </div>
 
-      {application.hasInterview ? (
+      {isScheduled ? (
         <div style={styles.interviewMessage}>
           <p>You have already scheduled an interview for this application. Check your interviews page</p>
         </div>
