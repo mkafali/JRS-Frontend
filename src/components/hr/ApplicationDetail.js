@@ -89,33 +89,40 @@ const ApplicationDetail = () => {
         </div>
       </div>
 
-      <form onSubmit={handleScheduleInterview} style={styles.form}>
-        <h3>Set Interview</h3>
+      {application.hasInterview ? (
+        <div style={styles.interviewMessage}>
+          <p>You have already scheduled an interview for this application. Check your interviews page</p>
+        </div>
+      ) : (
+        <form onSubmit={handleScheduleInterview} style={styles.form}>
+          <h3>Set Interview</h3>
 
-        <label style={styles.label}>
-          Interview Date (e.g. 2025-02-01 15:00:00)
-        </label>
-        <input
-          type="text"
-          value={interviewDate}
-          onChange={(e) => setInterviewDate(e.target.value)}
-          style={styles.input}
-          placeholder="YYYY-MM-DD HH:mm:ss"
-          required
-        />
+          <label style={styles.label}>
+            Interview Date (e.g. 2025-02-01 15:00:00)
+          </label>
+          <input
+            type="text"
+            value={interviewDate}
+            onChange={(e) => setInterviewDate(e.target.value)}
+            style={styles.input}
+            placeholder="YYYY-MM-DD HH:mm:ss"
+            required
+          />
 
-        <label style={styles.label}>Notes</label>
-        <textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          rows={3}
-          style={styles.textarea}
-        />
+          <label style={styles.label}>Notes</label>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            rows={3}
+            style={styles.textarea}
+          />
 
-        <button type="submit" style={styles.button}>
-          Schedule Interview
-        </button>
-      </form>
+          <button type="submit" style={styles.button}>
+            Schedule Interview
+          </button>
+        </form>
+      )}
+
 
       <button onClick={() => navigate(-1)} style={styles.goBackButton}>
         Go Back
